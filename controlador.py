@@ -8,14 +8,27 @@ import streamlit as st
 load_dotenv()
 
 # Configurar la clave API de Gemini desde la variable de entorno
-# api_key = os.getenv("GENAI_API_KEY")
-api_key = st.secrets["GENAI_API_KEY"]
 
+# Leer la clave API desde los secretos o el archivo .env
+def obtener_clave_api():
+    if "GENAI_API_KEY" in st.secrets:
+        return st.secrets["GENAI_API_KEY"]
+    else:
+        load_dotenv()
+        return os.getenv("GENAI_API_KEY")
+
+api_key = obtener_clave_api()
+
+# Verificar si la clave es válida
 if not api_key:
-    raise ValueError("La clave API de Gemini no se encontró. Asegúrate de configurar 'GENAI_API_KEY' en tu archivo .env")
+    raise ValueError("No se encontró la clave API. Configúrala en secrets.toml o en un archivo .env.")
 
-genai.configure(api_key=api_key)
-
+# Configurar la API de Gemini
+try:
+    genai.configure(api_key=api_key)
+except Exception as e:
+    st.error(f"Error al configurar la API: {e}")
+    st.stop()
 def limpiar_respuesta(respuesta):
     """
     Limpia la respuesta generada por el modelo para eliminar caracteres no deseados
