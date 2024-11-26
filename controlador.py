@@ -7,13 +7,24 @@ import streamlit as st
 # Cargar las variables de entorno desde un archivo .env
 load_dotenv()
 
-# Configurar la clave API de Gemini desde la variable de entorno
-# api_key = os.getenv("GENAI_API_KEY")
-api_key = st.secrets["GENAI_API_KEY"]
+# Cargar clave API desde Streamlit Cloud o archivo .env
+def obtener_clave_api():
+    try:
+        # Usar clave desde `st.secrets` si existe (Streamlit Cloud)
+        return st.secrets["GENAI_API_KEY"]
+    except Exception:
+        # Si no está disponible, cargar desde archivo `.env`
+        load_dotenv()  # Cargar las variables desde .env
+        return os.getenv("GENAI_API_KEY")
 
+# Obtener la clave API
+api_key = obtener_clave_api()
+
+# Verificar si se obtuvo una clave válida
 if not api_key:
-    raise ValueError("La clave API de Gemini no se encontró. Asegúrate de configurar 'GENAI_API_KEY' en tu archivo .env")
+    raise ValueError("No se encontró la clave API. Configura 'GENAI_API_KEY' en los secretos de Streamlit Cloud o en un archivo .env.")
 
+# Configurar la API de Gemini
 genai.configure(api_key=api_key)
 
 def limpiar_respuesta(respuesta):
