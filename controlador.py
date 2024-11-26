@@ -16,11 +16,17 @@ genai.configure(api_key=api_key)
 
 def limpiar_respuesta(respuesta):
     """
-    Limpia la respuesta generada por el modelo para eliminar caracteres no deseados.
+    Limpia la respuesta generada por el modelo para eliminar caracteres no deseados
+    y el prefijo "Tobi: ".
     """
+    # Eliminar corchetes, comillas y espacios innecesarios
     respuesta = re.sub(r"^\[|\]$", "", respuesta)  # Eliminar corchetes exteriores
     respuesta = re.sub(r"['\"]", "", respuesta)   # Eliminar comillas simples o dobles
     respuesta = respuesta.strip()  # Eliminar espacios en blanco adicionales
+
+    # Eliminar el prefijo "Tobi: " si existe
+    respuesta = re.sub(r"^Tobi:\s*", "", respuesta, flags=re.IGNORECASE)
+
     return respuesta
 
 def agregar_emojis(respuesta):
