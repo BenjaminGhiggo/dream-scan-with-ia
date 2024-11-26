@@ -2,6 +2,7 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 import re
+import random
 
 # Cargar las variables de entorno desde un archivo .env
 load_dotenv()
@@ -17,10 +18,43 @@ def limpiar_respuesta(respuesta):
     """
     Limpia la respuesta generada por el modelo para eliminar caracteres no deseados.
     """
-    # Eliminar caracteres no deseados como listas o comillas externas
     respuesta = re.sub(r"^\[|\]$", "", respuesta)  # Eliminar corchetes exteriores
     respuesta = re.sub(r"['\"]", "", respuesta)   # Eliminar comillas simples o dobles
     respuesta = respuesta.strip()  # Eliminar espacios en blanco adicionales
+    return respuesta
+
+def agregar_emojis(respuesta):
+    """
+    Agrega emojis a la respuesta de manera variada y coherente.
+    """
+
+    # Diccionario de palabras clave y conjuntos de emojis relacionados
+    emojis = {
+        "felicidad": ["😃", "😄", "😊", "🙂", "🥰"],
+        "tristeza": ["😢", "😭", "😔", "☹️"],
+        "miedo": ["😱", "😨", "😧"],
+        "calma": ["😌", "😇", "🫠"],
+        "reflexión": ["🤔", "💭", "🧐"],
+        "cambio": ["🔄", "🌟", "💫"],
+        "libertad": ["✈️", "🦅", "🌈"],
+        "agua": ["🌊", "🐟", "🐬"],
+        "sueño": ["🌌", "🌙", "💤"],
+        "éxito": ["🏆", "🌟", "🎯"],
+        "transformación": ["🔄", "🦋", "🔥"],
+        "amor": ["❤️", "💖", "💕"],
+        "pasión": ["🔥", "❤️‍🔥"],
+        "fuerza": ["💪", "🦾"],
+    }
+
+    # Usar emojis solo una vez por palabra clave
+    usados = set()
+    for palabra, lista_emojis in emojis.items():
+        if palabra in respuesta.lower():
+            if palabra not in usados:
+                emoji = random.choice(lista_emojis)  # Seleccionar un emoji aleatorio de la lista
+                respuesta = respuesta.replace(palabra, f"{palabra} {emoji}", 1)  # Reemplazar solo la primera ocurrencia
+                usados.add(palabra)
+
     return respuesta
 
 def interpretar_suenio(user_input, messages):
@@ -54,6 +88,8 @@ def interpretar_suenio(user_input, messages):
         if not respuesta_limpia:
             return "Lo siento, no pude interpretar tu sueño en este momento. Por favor, intenta de nuevo más tarde."
 
-        return respuesta_limpia
+        # Agregar emojis a la respuesta
+        respuesta_con_emojis = agregar_emojis(respuesta_limpia)
+        return respuesta_con_emojis
     except Exception as e:
         return f"Ha ocurrido un error: {e}"
