@@ -51,8 +51,10 @@ def agregar_emojis(respuesta):
     for palabra, lista_emojis in emojis.items():
         if palabra in respuesta.lower():
             if palabra not in usados:
+                # Crear un patrón para encontrar palabras completas (asegurarse de que no esté dentro de otras palabras)
+                patron = rf"\b{palabra}\b"
                 emoji = random.choice(lista_emojis)  # Seleccionar un emoji aleatorio de la lista
-                respuesta = respuesta.replace(palabra, f"{palabra} {emoji}", 1)  # Reemplazar solo la primera ocurrencia
+                respuesta = re.sub(patron, f"{palabra} {emoji}", respuesta, count=1)  # Reemplazar solo la primera ocurrencia
                 usados.add(palabra)
 
     return respuesta
