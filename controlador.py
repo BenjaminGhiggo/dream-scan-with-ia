@@ -3,12 +3,14 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import re
 import random
-
+import streamlit as st
 # Cargar las variables de entorno desde un archivo .env
 load_dotenv()
 
 # Configurar la clave API de Gemini desde la variable de entorno
-api_key = os.getenv("GENAI_API_KEY")
+# api_key = os.getenv("GENAI_API_KEY")
+api_key = st.secrets["GENAI_API_KEY"]
+
 if not api_key:
     raise ValueError("La clave API de Gemini no se encontró. Asegúrate de configurar 'GENAI_API_KEY' en tu archivo .env")
 
